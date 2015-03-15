@@ -70,6 +70,23 @@ namespace vlExt
 		}
 	}
 
+	void ConeVelGen::generate(double dt, ParticleData *p, size_t startId, size_t endId)
+	{
+		float phi, theta, v, r;
+		for (size_t i = startId; i < endId; ++i)
+		{
+			phi = vl::random(-m_phi, m_phi) + m_basePhi;
+			theta = vl::random(-m_theta, m_theta) + m_baseTheta;
+			v = vl::random(m_minVel, m_maxVel);
+
+			r = v*sinf(phi);
+			p->m_vel[i].z() = v*cosf(phi);
+			p->m_vel[i].x() = r*cosf(theta);
+			p->m_vel[i].y() = r*sinf(theta);
+		}
+	}
+
+
 	void BasicTimeGen::generate(double dt, ParticleData *p, size_t startId, size_t endId)
 	{
 		for (size_t i = startId; i < endId; ++i)

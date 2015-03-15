@@ -10,25 +10,26 @@
 namespace vlExt
 {
 	namespace {
-		std::string vertexShaderCode = "\n"
+		std::string vertexShaderCode = ""
 			"#version 330\n"
-			"uniform mat4x4 matModelview;\n"
-			"uniform mat4x4 matProjection;\n"
-			"layout(location = 0) in vec4 vVertex;\n"
-			"layout(location = 2) in vec4 vColor;\n"
+			"uniform mat4 vl_ModelViewMatrix;\n"
+			"uniform mat4 vl_ProjectionMatrix;\n"
+			"layout(location = 0) in vec4 vl_Vertex;\n"
+			"layout(location = 2) in vec4 vl_Color;\n"
 			"out vec4 outColor;\n"
 			"void main()\n"
 			"{\n"
-			"	vec4 eyePos = matModelview * gl_Vertex;\n"
-			"	gl_Position = matProjection * eyePos;\n"
+			"	vec4 eyePos = vl_ModelViewMatrix * vl_Vertex;\n"
+			"	gl_Position = vl_ProjectionMatrix * eyePos;\n"
+			"	// gl_Position = vl_Vertex;\n"
 			"\n"
-			"	outColor = vColor;\n"
+			"	outColor = vl_Color;\n"
 			"\n"
 			"	float dist = length(eyePos.xyz);\n"
 			"	float att = inversesqrt(0.1f*dist);\n"
 			"	gl_PointSize = 2.0f * att;\n"
 			"}";
-		std::string fragShaderCode = "\n"
+		std::string fragShaderCode = ""
 			"#version 330\n"
 			"uniform sampler2D tex;\n"
 			"in vec4 outColor;\n"
@@ -36,6 +37,8 @@ namespace vlExt
 			"void main()\n"
 			"{\n"
 			"	vFragColor = texture(tex, gl_PointCoord) * outColor;\n"
+			"	// vFragColor = outColor;\n"
+			"	//vFragColor = vec4(1, 1, 1, 1);\n"
 			"}\n";
 		vl::ref<vl::GLSLProgram> makeDefaultShader()
 		{
@@ -54,8 +57,6 @@ namespace vlExt
 		: m_particles(maxCount), m_prevClock(-1)
 	{
 		m_count = maxCount;
-		for (size_t i = 0; i < maxCount; ++i)
-			m_particles.m_alive[i] = false;
 	}
 
 	void ParticleSystem::prepare(vl::Texture* tex, vl::Transform* trans)
@@ -65,35 +66,30 @@ namespace vlExt
 		m_drawArrays = new vl::DrawArrays();
 		m_posBuffer->resize(m_count);
 		m_colBuffer->resize(m_count);
-		m_posBuffer->updateBufferObject();
-		m_colBuffer->updateBufferObject();
 		m_posBuffer->bufferObject()->setBufferData(vl::EBufferObjectUsage::BU_STREAM_DRAW);
 		m_colBuffer->bufferObject()->setBufferData(vl::EBufferObjectUsage::BU_STREAM_DRAW);
+		m_drawArrays->setPrimitiveType(vl::EPrimitiveType::PT_POINTS);
 		auto geom = new vl::Geometry();
 		geom->setVertexArray(m_posBuffer.get());
 		geom->setColorArray(m_colBuffer.get());
-		m_drawArrays = new vl::DrawArrays();
-		m_drawArrays->setPrimitiveType(vl::EPrimitiveType::PT_POINTS);
+		geom->drawCalls()->push_back(m_drawArrays.get());
+		geom->convertToVertexAttribs();
 		auto effect = new vl::Effect();
 		effect->shader()->enable(vl::EEnable::EN_BLEND);
+		effect->shader()->enable(vl::EEnable::EN_POINT_SPRITE);
 		effect->shader()->enable(vl::EEnable::EN_PROGRAM_POINT_SIZE);
 		effect->shader()->gocBlendFunc()->set(vl::EBlendFactor::BF_SRC_ALPHA, vl::EBlendFactor::BF_ONE);
 		effect->shader()->gocTextureSampler(0)->setTexture(tex);
 		effect->shader()->setRenderState(makeDefaultShader().get());
-		//effect->shader()->gocTexEnv(0)->setMode(vl::ETexEnvMode::TEM_REPLACE);
-		//effect->shader()->gocTexEnv(0)->setPointSpriteCoordReplace(true);
 
 		m_actor = new vl::Actor(geom, effect, trans);
-		m_actor->setOccludee(false);
+		m_actor->gocUniform("tex")->setUniformI(0);
+
 		m_actor->actorEventCallbacks()->push_back(
 			new vlExt::ActorEventCallbackFunc(
 				[this](vl::Actor* actor, vl::real frame_clock, const vl::Camera* cam, vl::Renderable* renderable, const vl::Shader* shader, int pass)
 				{
 					update(frame_clock);
-					vl::mat4 mv = cam->viewMatrix() * actor->transform()->getComputedWorldMatrix();
-					actor->gocUniform("matModelview")->setUniformMatrix4f(1, mv.ptr());
-					actor->gocUniform("matProjection")->setUniformMatrix4f(1, cam->projectionMatrix().ptr());
-					actor->gocUniform("tex")->setUniformI(0);
 				}
 			));
 	}

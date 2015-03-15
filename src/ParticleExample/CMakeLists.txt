@@ -49,12 +49,12 @@ endif()
 # Handle extras added by plugins
 #VL_PROJECT_GET(VLPARTICLE _SOURCES _DEFINITIONS _INCLUDE_DIRS _EXTRA_LIBS_D _EXTRA_LIBS_R)
 add_definitions(${_DEFINITIONS})
-include_directories(${_INCLUDE_DIRS})
+include_directories(${_INCLUDE_DIRS} ${GLUT_INCLUDE_DIR})
 
 add_executable(ParticleExample ${PARTICLEEXAMPLE_SRC} ${PARTICLEEXAMPLE_INC})
 #VL_DEFAULT_TARGET_PROPERTIES(VLParticle)
 
-target_link_libraries(ParticleExample ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} ${VL_LIBRARIES} VLEXTParticle)
+target_link_libraries(ParticleExample ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} ${GLUT_LIBRARIES} ${VL_LIBRARIES} VLEXTParticle)
 
 foreach(libName ${_EXTRA_LIBS_D})
 	target_link_libraries(ParticleExample debug ${libName})

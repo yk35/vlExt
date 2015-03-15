@@ -1,5 +1,6 @@
 #include "vlExtParticle/ParticleData.hpp"
 #include <vlCore/glsl_math.hpp>
+#include <algorithm>
 
 namespace vlExt
 {
@@ -9,13 +10,21 @@ namespace vlExt
 		m_countAlive = 0;
 
 		m_pos.reset(new vl::vec4[maxSize]);
+		std::fill(m_pos.get(), m_pos.get() + maxSize, vl::vec4(0, 0, 0, 1));
 		m_col.reset(new vl::vec4[maxSize]);
+		std::fill(m_col.get(), m_col.get() + maxSize, vl::vec4(1, 1, 1, 1));
 		m_startCol.reset(new vl::vec4[maxSize]);
+		std::fill(m_startCol.get(), m_startCol.get() + maxSize, vl::vec4(1, 1, 1, 1));
 		m_endCol.reset(new vl::vec4[maxSize]);
+		std::fill(m_endCol.get(), m_endCol.get() + maxSize, vl::vec4(1, 1, 1, 1));
 		m_vel.reset(new vl::vec4[maxSize]);
+		std::fill(m_vel.get(), m_vel.get() + maxSize, vl::vec4(0, 0, 0, 0));
 		m_acc.reset(new vl::vec4[maxSize]);
+		std::fill(m_acc.get(), m_acc.get() + maxSize, vl::vec4(0, 0, 0, 0));
 		m_time.reset(new vl::vec4[maxSize]);
+		std::fill(m_time.get(), m_time.get() + maxSize, vl::vec4(1, 1, 1, 1));
 		m_alive.reset(new bool[maxSize]);
+		std::fill(m_alive.get(), m_alive.get() + maxSize, false);
 	}
 
 	void ParticleData::kill(size_t id)

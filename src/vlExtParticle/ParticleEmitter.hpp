@@ -32,6 +32,12 @@ namespace vlExt
 		 */
 		void addGenerator(ParticleGenerator* generator);
 
+		/*!
+		 * get generators
+		 */
+		vl::Collection<ParticleGenerator>& generators() { return m_generators;  }
+		vl::Collection<ParticleGenerator> const& generators() const { return m_generators; }
+
 		vl::real emitRate() const { return m_emitRate; }
 		/**
 		 * set to emit particle rate per second

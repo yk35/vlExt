@@ -29,16 +29,17 @@ namespace vlExt
 		const size_t endId = p->countAlive();
 		for (size_t i = 0; i < endId; ++i)
 		{
-			if (p->m_pos[i].y() < m_floorY)
+			float d = vl::dot(p->m_pos[i], m_floor);
+			if (d < 0)
 			{
 				vl::vec4 force = p->m_acc[i];
-				float normalFactor = vl::dot(force, vl::vec4(0.0f, 1.0f, 0.0f, 0.0f));
+				float normalFactor = vl::dot(force, m_floor);
 				if (normalFactor < 0.0f)
-					force -= vl::vec4(0.0f, 1.0f, 0.0f, 0.0f) * normalFactor;
+					force -= vl::vec4(m_floor.x(), m_floor.z(), m_floor.z(), 0.0f) * normalFactor;
 
 				float velFactor = vl::dot(p->m_vel[i], vl::vec4(0.0f, 1.0f, 0.0f, 0.0f));
 				//if (velFactor < 0.0)
-				p->m_vel[i] -= vl::vec4(0.0f, 1.0f, 0.0f, 0.0f) * (1.0f + m_bounceFactor) * velFactor;
+				p->m_vel[i] -= vl::vec4(m_floor.x(), m_floor.z(), m_floor.z(), 0.0f) * (1.0f + m_bounceFactor) * velFactor;
 
 				p->m_acc[i] = force;
 			}
