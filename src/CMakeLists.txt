@@ -1,3 +1,6 @@
 # particle
 add_subdirectory(vlExtParticle)
+add_subdirectory(vlExtUtility)
 add_subdirectory(ParticleExample)
+add_subdirectory(vlExtLoadWriter)
+add_subdirectory(LoadWriterExample)

@@ -12,14 +12,14 @@
 ################################################################################
 
 ################################################################################
-# VLParticle Library
+# LoadWriter Library
 ################################################################################
 
-project(VLEXTPARTICLE)
+project(LOADWRITEREXAMPLE)
 
-# Gather VLExtParticle source files
-file(GLOB VLEXTPARTICLE_SRC "*.cpp")
-file(GLOB VLEXTPARTICLE_INC "*.hpp")
+# Gather VLCore source files
+file(GLOB LOADWRITEREXAMPLE_SRC "*.cpp")
+file(GLOB LOADWRITEREXAMPLE_INC "*.hpp")
 
 # Debug postfix for all libraries.
 set(CMAKE_DEBUG_POSTFIX "-d")
@@ -37,9 +37,6 @@ endif()
 
 if(WIN32)
 	add_definitions(-DUNICODE)
-	if(VLEXT_DYNAMIC_LINKING)
-		add_definitions(-DVLEXT_EXPORTS)
-	endif()
 endif()
 
 if(MSVC)
@@ -52,19 +49,19 @@ endif()
 # Handle extras added by plugins
 #VL_PROJECT_GET(VLPARTICLE _SOURCES _DEFINITIONS _INCLUDE_DIRS _EXTRA_LIBS_D _EXTRA_LIBS_R)
 add_definitions(${_DEFINITIONS})
-include_directories(${_INCLUDE_DIRS})
+include_directories(${_INCLUDE_DIRS} ${GLUT_INCLUDE_DIR})
 
-add_library(VLEXTParticle ${VLEXT_SHARED_OR_STATIC} ${VLEXTPARTICLE_SRC} ${VLEXTPARTICLE_INC})
-#VL_DEFAULT_TARGET_PROPERTIES(VLParticle)
+add_executable(LoadWriterExample ${LOADWRITEREXAMPLE_SRC} ${LOADWRITEREXAMPLE_INC})
+#VL_DEFAULT_TARGET_PROPERTIES(VLLoadWriter)
 
-target_link_libraries(VLEXTParticle ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} ${VL_LIBRARIES})
+target_link_libraries(LoadWriterExample ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} ${GLUT_LIBRARIES} ${VL_LIBRARIES} VLExtLoadWriter)
 
 foreach(libName ${_EXTRA_LIBS_D})
-	target_link_libraries(VLEXTParticle debug ${libName})
+	target_link_libraries(LoadWriterExample debug ${libName})
 endforeach()
 
 foreach(libName ${_EXTRA_LIBS_R})
-	target_link_libraries(VLEXTParticle optimized ${libName})
+	target_link_libraries(LoadWriterExample optimized ${libName})
 endforeach()
 
 
@@ -75,4 +72,4 @@ endforeach()
 #VL_INSTALL_TARGET(VLParticle)
 
 # VLCore headers
-install(FILES ${VLPARTICLE_INC} DESTINATION "${VLEXT_INCLUDE_INSTALL_DIR}/vlParticle")
+#install(FILES ${VLPARTICLE_INC} DESTINATION "${VLEXT_INCLUDE_INSTALL_DIR}/vlParticle")

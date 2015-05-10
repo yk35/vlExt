@@ -10,15 +10,22 @@ class ParticleApplet : public vl::Applet
 {
 
 public:
+	vl::Time mFPSTimer;
 	virtual void updateScene()
 	{
-		mParticle->update(vl::Time::currentTime());
+		if (mFPSTimer.elapsed() > 2)
+		{
+			mFPSTimer.start();
+			openglContext()->setWindowTitle(vl::Say("[%.1n] %s") << fps() << appletName() + " - " + vl::String("VL ") + vl::VisualizationLibrary::versionString());
+			vl::Log::print(vl::Say("FPS=%.1n\n") << fps());
+		}
 	}
 	virtual void initEvent()
 	{
+		mFPSTimer.start();
 		mParticle = new vlExt::ParticleSystem(1000000);
 		auto emitter = new vlExt::ParticleEmitter();
-		emitter->setEmitRate(10000);
+		emitter->setEmitRate(100000);
 		{
 			auto boxgen = new vlExt::BoxPosGen();
 			boxgen->setPos(vl::vec3(0, 0, 0));
@@ -34,7 +41,7 @@ public:
 			auto velgen = new vlExt::ConeVelGen();
 			velgen->setVelocity(1, 10);
 			velgen->setDirectionBaseAngle(0, 0);
-			velgen->setDirectionRange(vl::radians(10.f), vl::radians(5.f));
+			velgen->setDirectionRange(vl::radians(10.f), vl::radians(10.f));
 			emitter->addGenerator(velgen);
 
 		}

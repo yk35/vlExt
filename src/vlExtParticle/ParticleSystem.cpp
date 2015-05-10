@@ -5,7 +5,7 @@
 #include "vlExtParticle/ParticleData.hpp"
 #include <vlGraphics/BufferObject.hpp>
 #include <vlGraphics/Geometry.hpp>
-#include "vlExtUtility/ActorUtility.hpp"
+#include "vlExtUtility/CallbackUtility.hpp"
 
 namespace vlExt
 {

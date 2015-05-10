@@ -1,10 +1,15 @@
 project(vlExt)
 include (GenerateExportHeader)
 cmake_minimum_required(VERSION 2.6)
-set(VL_ROOT "D:/Program Files/Visualization_Library_SDK-2011.9")
+set(VL_ROOT "D:/Program Files/Visualization_Library_SDK-2011.9" CACHE PATH "visualization library root" )
 find_package(VL COMPONENTS VLCore VLGraphics VLGLUT REQUIRED)
 find_package(OpenGL REQUIRED)
-find_package(GLUT REQUIRED)
+find_package(GLUT )
+find_package(assimp)
+
+set(GLFX_LIBRARIES "" CACHE FILEPATH "glfx libraries" )
+set(GLFX_INCLUDE_DIRS "" CACHE PATH "glfx include dirs" )
+
 # Dynamic vs Static Linking
 option(VLEXT_DYNAMIC_LINKING "Set to ON to build VLEXT for dynamic linking, or OFF for static." ON)
 if(VLEXT_DYNAMIC_LINKING)
@@ -30,8 +35,13 @@ else()
 	set(CMAKE_CXX_FLAGS "-W -Wall") # see also: -W -Wall -Wwrite-strings -Wcast-qual -Wconversion -Wshadow
 endif()
 
+
+
 if(WIN32)
 	add_definitions(-DUNICODE)
+	if(VLEXT_DYNAMIC_LINKING)
+	  add_definitions(-DVLEXT_EXPORTS)
+	endif()
 endif()
 
 if(MSVC)
